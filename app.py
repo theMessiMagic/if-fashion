@@ -102,24 +102,58 @@ def customer():
             file.save(os.path.join(CUSTOMER_FOLDER, filename))
 
             data = load_json(CUSTOMER_DB)
+            track_id = f"IF-{datetime.now().strftime('%y%m%d')}-{str(len(data['submissions']) + 1).zfill(4)}"
+
             data["submissions"].append({
+                "track_id": track_id,
                 "name": name,
                 "phone": phone,
                 "image": filename,
                 "message": message,
-                "time": datetime.now().strftime("%Y-%m-%d %H:%M")
+                "time": datetime.now().strftime("%Y-%m-%d %H:%M"),
+                "status": "pending"
             })
+
             save_json(CUSTOMER_DB, data)
 
+            # store track id temporarily
+            session["last_track_id"] = track_id
+
             flash(
-                "Thank you! We have received your design. "
-                "We will contact you within 3–4 business days.",
+                "Thank you! We have received your design.",
                 "success"
             )
 
-        return redirect(url_for("customer"))
+            return redirect(url_for("customer"))
 
-    return render_template("customer_contact.html")
+    last_track_id = session.get("last_track_id")
+    session.pop("last_track_id", None)
+
+    return render_template("customer_contact.html", last_track_id=last_track_id)
+
+
+# ---------------- TRACK CUSTOMER REQUEST ----------------
+
+@app.route("/track", methods=["GET", "POST"])
+def track_request():
+    result = None
+    error = None
+
+    if request.method == "POST":
+        track_id = request.form.get("track_id", "").strip()
+
+        data = load_json(CUSTOMER_DB)
+
+        for s in data["submissions"]:
+            if s.get("track_id") == track_id:
+                result = s
+                break
+
+        if not result:
+            error = "Invalid Track ID. Please check and try again."
+
+    return render_template("track.html", result=result, error=error)
+
 
 # ---------------- ADMIN SIGNUP (ONE TIME) ----------------
 
@@ -174,7 +208,8 @@ def admin_dashboard():
     if "admin" not in session:
         return redirect(url_for("admin_login"))
 
-    if request.method == "POST":
+    if request.method == "POST" and (
+    "home_image" in request.files or "design_image" in request.files):
         if "home_image" in request.files:
             file = request.files["home_image"]
             if file and allowed_file(file.filename):
@@ -185,14 +220,18 @@ def admin_dashboard():
             if file and allowed_file(file.filename):
                 file.save(os.path.join(DESIGN_FOLDER, secure_filename(file.filename)))
 
+    home_images = os.listdir(HOME_FOLDER)
     designs = os.listdir(DESIGN_FOLDER)
     customers = load_json(CUSTOMER_DB)["submissions"]
 
+
     return render_template(
         "admin_dashboard.html",
+        home_images=home_images,
         designs=designs,
         customers=customers
-    )
+)
+
 
 @app.route("/admin/delete/<filename>")
 def delete_design(filename):
@@ -202,6 +241,71 @@ def delete_design(filename):
     path = os.path.join(DESIGN_FOLDER, filename)
     if os.path.exists(path):
         os.remove(path)
+
+    return redirect(url_for("admin_dashboard"))
+
+# ---------------- ADMIN DELETE HOME IMAGE ----------------
+
+@app.route("/admin/delete/home/<filename>", methods=["POST"])
+def delete_home_image(filename):
+    if "admin" not in session:
+        return redirect(url_for("admin_login"))
+
+    path = os.path.join(HOME_FOLDER, filename)
+    if os.path.exists(path):
+        os.remove(path)
+
+    return redirect(url_for("admin_dashboard"))
+
+
+# ---------------- ADMIN DELETE DESIGN IMAGE ----------------
+
+@app.route("/admin/delete/design/<filename>", methods=["POST"])
+def delete_design_image(filename):
+    if "admin" not in session:
+        return redirect(url_for("admin_login"))
+
+    path = os.path.join(DESIGN_FOLDER, filename)
+    if os.path.exists(path):
+        os.remove(path)
+
+    return redirect(url_for("admin_dashboard"))
+
+# ---------------- CUSTOMER SUBMISSION STATUS UPDATE ----------------
+
+@app.route("/admin/customer/status/<int:index>/<status>", methods=["POST"])
+def update_customer_status(index, status):
+    if "admin" not in session:
+        return redirect(url_for("admin_login"))
+
+    data = load_json(CUSTOMER_DB)
+
+    if 0 <= index < len(data["submissions"]):
+        if status in ["approved", "rejected", "pending"]:
+            data["submissions"][index]["status"] = status
+            save_json(CUSTOMER_DB, data)
+
+    return redirect(url_for("admin_dashboard"))
+
+
+# ---------------- DELETE CUSTOMER SUBMISSION ----------------
+
+@app.route("/admin/customer/delete/<int:index>", methods=["POST"])
+def delete_customer_submission(index):
+    if "admin" not in session:
+        return redirect(url_for("admin_login"))
+
+    data = load_json(CUSTOMER_DB)
+
+    if 0 <= index < len(data["submissions"]):
+        img = data["submissions"][index]["image"]
+        img_path = os.path.join(CUSTOMER_FOLDER, img)
+
+        if os.path.exists(img_path):
+            os.remove(img_path)
+
+        data["submissions"].pop(index)
+        save_json(CUSTOMER_DB, data)
 
     return redirect(url_for("admin_dashboard"))
 

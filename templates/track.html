@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Track Your Request</h2>
+
+<form method="POST" style="max-width:400px;">
+    <input type="text"
+           name="track_id"
+           placeholder="Enter your Track ID"
+           required
+           style="width:100%; padding:10px; margin-bottom:10px;">
+    <button type="submit">Track</button>
+</form>
+
+{% if error %}
+<p style="color:red;">{{ error }}</p>
+{% endif %}
+
+{% if result %}
+<hr>
+<h3>Request Status</h3>
+
+<p>
+    <strong>Track ID:</strong> {{ result.track_id }} <br>
+    <strong>Name:</strong> {{ result.name }} <br>
+    <strong>Phone:</strong> {{ result.phone }} <br>
+    <strong>Status:</strong>
+
+    {% if result.status == 'approved' %}
+        <span style="color:green;">Approved</span>
+    {% elif result.status == 'rejected' %}
+        <span style="color:red;">Rejected</span>
+    {% else %}
+        <span style="color:orange;">Pending</span>
+    {% endif %}
+
+    <br>
+    <strong>Submitted:</strong> {{ result.time }}
+</p>
+{% endif %}
+
+{% endblock %}

@@ -1,8 +1,8 @@
 {
   "admins": [
     {
-      "username": "Minhajul",
-      "password": "scrypt:32768:8:1$LJQH4SjUCbh1VL71$554048ab313209ba1d90ac1988b3b2f9818951b4e07147b0b1ad1d511d240fa6712f4b05ae6b813afc2ced927b335c36ea65d7b6cb39ee29c58dec6ab33cc3df"
+      "username": "admin",
+      "password": "scrypt:32768:8:1$ivSW7JOGju5cmdfZ$179a5033ced40c06290a12601ed9ad4c02e7ed40190e1146aef08802529c8caeca3d188c0cd1f61f625d38764f7fd64566d8c6d681820c1dbbd2d776260298ee"
     }
   ]
 }

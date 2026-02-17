@@ -16,9 +16,22 @@
 </form>
 
 <div>
+    <div>
     {% for img in home_images %}
-        <img src="{{ url_for('static', filename='images/home/' + img) }}" width="150">
+        <div style="display:inline-block; margin:10px;">
+            <img src="{{ url_for('static', filename='images/home/' + img) }}" width="150"><br>
+
+            <form method="POST"
+                  action="{{ url_for('delete_home_image', filename=img) }}"
+                  onsubmit="return confirm('Delete this home image?');">
+                <button type="submit" style="background:red;color:white;">
+                    Delete
+                </button>
+            </form>
+        </div>
     {% endfor %}
+</div>
+
 </div>
 
 <hr>
@@ -32,9 +45,22 @@
 </form>
 
 <div>
+    <div>
     {% for img in designs %}
-        <img src="{{ url_for('static', filename='images/designs/' + img) }}" width="150">
+        <div style="display:inline-block; margin:10px;">
+            <img src="{{ url_for('static', filename='images/designs/' + img) }}" width="150"><br>
+
+            <form method="POST"
+                  action="{{ url_for('delete_design_image', filename=img) }}"
+                  onsubmit="return confirm('Delete this design?');">
+                <button type="submit" style="background:red;color:white;">
+                    Delete
+                </button>
+            </form>
+        </div>
     {% endfor %}
+</div>
+
 </div>
 
 <hr>
@@ -43,13 +69,51 @@
 <h2>Customer Submissions</h2>
 
 {% for c in customers %}
+<div style="border:1px solid #ccc; padding:15px; margin-bottom:15px;">
+
     <p>
+        <strong>Track ID:</strong> {{ c.track_id }} <br>
         <strong>Name:</strong> {{ c.name }} <br>
         <strong>Phone:</strong> {{ c.phone }} <br>
-        <img src="{{ url_for('static', filename='images/customer_uploads/' + c.image) }}" width="150">
+        <strong>Message:</strong> {{ c.message }} <br>
+        <strong>Status:</strong>
+
+            {% if c.status == 'approved' %}
+                <span style="font-weight:bold; color:green;">Approved</span>
+            {% elif c.status == 'rejected' %}
+                <span style="font-weight:bold; color:red;">Rejected</span>
+            {% else %}
+                <span style="font-weight:bold; color:orange;">Pending</span>
+            {% endif %}
+
     </p>
-    <hr>
+
+    <img src="{{ url_for('static', filename='images/customer_uploads/' + c.image) }}"
+         width="150"><br><br>
+
+    <!-- STATUS BUTTONS -->
+    <form method="POST"
+          action="{{ url_for('update_customer_status', index=loop.index0, status='approved') }}"
+          style="display:inline;">
+        <button type="submit">Approve</button>
+    </form>
+
+    <form method="POST"
+          action="{{ url_for('update_customer_status', index=loop.index0, status='rejected') }}"
+          style="display:inline;">
+        <button type="submit">Reject</button>
+    </form>
+    
+    <form method="POST"
+          action="{{ url_for('delete_customer_submission', index=loop.index0) }}"
+          style="display:inline;"
+          onsubmit="return confirm('Delete this submission?');">
+        <button style="background:red;color:white;">Delete</button>
+    </form>
+
+</div>
 {% endfor %}
+
 
 <br>
 <a href="{{ url_for('logout') }}">Logout</a>
