@@ -66,7 +66,13 @@ def save_json(path, data):
 
 @app.route("/")
 def home():
-    return render_template("home.html")
+    home_images = os.listdir(HOME_FOLDER)
+    return render_template(
+        "home.html",
+        home_images=home_images,
+        datetime=datetime
+    )
+
 
 @app.route("/about")
 def about():
