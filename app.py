@@ -25,14 +25,19 @@ ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "webp"}
 def health():
     return "OK", 200
 
-# ---------------- SAFE STARTUP (RUNS ONCE) ----------------
+# ---------------- SAFE STARTUP (RUNS ONCE – FLASK 3 FIX) ----------------
 
-@app.before_first_request
+_initialized = False
+
+@app.before_request
 def setup_app():
+    global _initialized
+    if _initialized:
+        return
+
     os.makedirs(DESIGN_FOLDER, exist_ok=True)
     os.makedirs(CUSTOMER_FOLDER, exist_ok=True)
     os.makedirs(HOME_FOLDER, exist_ok=True)
-
 
     if not os.path.exists(ADMIN_DB):
         with open(ADMIN_DB, "w", encoding="utf-8") as f:
@@ -41,6 +46,8 @@ def setup_app():
     if not os.path.exists(CUSTOMER_DB):
         with open(CUSTOMER_DB, "w", encoding="utf-8") as f:
             json.dump({"submissions": []}, f)
+
+    _initialized = True
 
 # ---------------- HELPERS ----------------
 
@@ -172,7 +179,6 @@ def admin_dashboard():
             if file and allowed_file(file.filename):
                 file.save(os.path.join(DESIGN_FOLDER, secure_filename(file.filename)))
 
-    home_images = os.listdir(HOME_FOLDER)
     designs = os.listdir(DESIGN_FOLDER)
     customers = load_json(CUSTOMER_DB)["submissions"]
 
