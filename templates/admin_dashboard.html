@@ -1,35 +1,58 @@
-{% extends "base.html" %}
-{% block content %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Dashboard</title>
+</head>
+<body>
 
-<h2>Admin Dashboard</h2>
+<h1>Admin Dashboard</h1>
 
-<h3>Upload Design</h3>
+<!-- ===== HOME PAGE IMAGE UPLOAD ===== -->
+<h2>Upload Home Page Images</h2>
+
 <form method="POST" enctype="multipart/form-data">
-    <input type="file" name="image" required>
-    <button type="submit">Upload</button>
+    <input type="file" name="home_image" required>
+    <button type="submit">Upload to Home</button>
 </form>
 
-<h3>Your Designs</h3>
-{% for img in designs %}
-    <div>
-        <img src="{{ url_for('static', filename='images/designs/' + img) }}" width="150">
-        <a href="/admin/delete/{{ img }}">Delete</a>
-    </div>
-{% endfor %}
+<div>
+    {% for img in home_images %}
+        <img src="{{ url_for('static', filename='images/home/' + img) }}" width="150">
+    {% endfor %}
+</div>
 
 <hr>
 
-<h3>Customer Submissions</h3>
+<!-- ===== DESIGN IMAGE UPLOAD ===== -->
+<h2>Upload Design Images</h2>
+
+<form method="POST" enctype="multipart/form-data">
+    <input type="file" name="design_image" required>
+    <button type="submit">Upload Design</button>
+</form>
+
+<div>
+    {% for img in designs %}
+        <img src="{{ url_for('static', filename='images/designs/' + img) }}" width="150">
+    {% endfor %}
+</div>
+
+<hr>
+
+<!-- ===== CUSTOMER SUBMISSIONS ===== -->
+<h2>Customer Submissions</h2>
+
 {% for c in customers %}
-    <div style="border:1px solid #ccc; margin:10px; padding:10px;">
-        <p><b>Name:</b> {{ c.name }}</p>
-        <p><b>Phone:</b> {{ c.phone }}</p>
-        <p><b>Message:</b> {{ c.message }}</p>
-        <p><b>Time:</b> {{ c.time }}</p>
+    <p>
+        <strong>Name:</strong> {{ c.name }} <br>
+        <strong>Phone:</strong> {{ c.phone }} <br>
         <img src="{{ url_for('static', filename='images/customer_uploads/' + c.image) }}" width="150">
-    </div>
+    </p>
+    <hr>
 {% endfor %}
 
-<a href="/logout">Logout</a>
+<br>
+<a href="{{ url_for('logout') }}">Logout</a>
 
-{% endblock %}
+</body>
+</h

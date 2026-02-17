@@ -1,15 +1,20 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>I.F Fashion</title>
+</head>
+<body>
 
-{% block content %}
-<h2>Welcome to IF. Fashion</h2>
+<h1>Welcome to I.F Fashion</h1>
 
-<p>
-We provide professional embroidery services using Baba embroidery machines.
-Ostagars bring dresses to us, we do embroidery work, and the finished dresses
-are sold by them in haat.
-</p>
+<h2>Our Work</h2>
 
-<p>
-We do not sell dresses directly. We work only with ostagars.
-</p>
-{% endblock %}
+<div>
+    {% for img in images %}
+        <img src="{{ url_for('static', filename='images/home/' + img) }}" width="200">
+    {% endfor %}
+</div>
+
+</body>
+</html>
+

@@ -11,6 +11,7 @@ app.secret_key = "CHANGE_THIS_SECRET_KEY"
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
+HOME_FOLDER = os.path.join(BASE_DIR, "static", "images", "home")
 DESIGN_FOLDER = os.path.join(BASE_DIR, "static", "images", "designs")
 CUSTOMER_FOLDER = os.path.join(BASE_DIR, "static", "images", "customer_uploads")
 ADMIN_DB = os.path.join(BASE_DIR, "admin_users.json")
@@ -30,6 +31,8 @@ def health():
 def setup_app():
     os.makedirs(DESIGN_FOLDER, exist_ok=True)
     os.makedirs(CUSTOMER_FOLDER, exist_ok=True)
+    os.makedirs(HOME_FOLDER, exist_ok=True)
+
 
     if not os.path.exists(ADMIN_DB):
         with open(ADMIN_DB, "w", encoding="utf-8") as f:
@@ -159,10 +162,17 @@ def admin_dashboard():
         return redirect(url_for("admin_login"))
 
     if request.method == "POST":
-        file = request.files.get("image")
-        if file and allowed_file(file.filename):
-            file.save(os.path.join(DESIGN_FOLDER, secure_filename(file.filename)))
+        if "home_image" in request.files:
+            file = request.files["home_image"]
+            if file and allowed_file(file.filename):
+                file.save(os.path.join(HOME_FOLDER, secure_filename(file.filename)))
 
+        if "design_image" in request.files:
+            file = request.files["design_image"]
+            if file and allowed_file(file.filename):
+                file.save(os.path.join(DESIGN_FOLDER, secure_filename(file.filename)))
+
+    home_images = os.listdir(HOME_FOLDER)
     designs = os.listdir(DESIGN_FOLDER)
     customers = load_json(CUSTOMER_DB)["submissions"]
 
