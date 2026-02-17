@@ -1,163 +1,64 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>I.F Fashion</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+{% extends "base.html" %}
 
-    <style>
-        body {
-            margin: 0;
-            font-family: "Poppins", Arial, sans-serif;
-            background-color: #f9f9f9;
-            color: #222;
-        }
+{% block content %}
 
-        /* -------- HERO SECTION -------- */
-        .hero {
-            height: 70vh;
-            background: linear-gradient(
-                rgba(0,0,0,0.5),
-                rgba(0,0,0,0.5)
-            ),
-            url("{{ url_for('static', filename='images/home/' ~ home_images[0]) if home_images else '' }}");
-            background-size: cover;
-            background-position: center;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            color: white;
-        }
-
-        .hero h1 {
-            font-size: 3rem;
-            margin-bottom: 10px;
-            letter-spacing: 2px;
-        }
-
-        .hero p {
-            font-size: 1.2rem;
-            max-width: 600px;
-        }
-
-        /* -------- SECTION -------- */
-        .section {
-            padding: 60px 8%;
-        }
-
-        .section h2 {
-            font-size: 2.2rem;
-            margin-bottom: 10px;
-        }
-
-        .section p {
-            color: #555;
-            max-width: 700px;
-        }
-
-        /* -------- IMAGE GRID -------- */
-        .grid {
-            margin-top: 40px;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-        }
-
-        .grid img {
-            width: 100%;
-            height: 280px;
-            object-fit: cover;
-            border-radius: 15px;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-        }
-
-        .grid img:hover {
-            transform: scale(1.05);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-        }
-
-        /* -------- CTA -------- */
-        .cta {
-            background: #111;
-            color: white;
-            padding: 60px 8%;
-            text-align: center;
-        }
-
-        .cta h2 {
-            font-size: 2rem;
-            margin-bottom: 10px;
-        }
-
-        .cta a {
-            display: inline-block;
-            margin-top: 20px;
-            padding: 14px 35px;
-            background: white;
-            color: black;
-            text-decoration: none;
-            border-radius: 30px;
-            font-weight: bold;
-            transition: 0.3s;
-        }
-
-        .cta a:hover {
-            background: #ddd;
-        }
-
-        /* -------- FOOTER -------- */
-        footer {
-            background: #000;
-            color: #aaa;
-            text-align: center;
-            padding: 20px;
-            font-size: 0.9rem;
-        }
-    </style>
-</head>
-<body>
-
-<!-- HERO -->
-<section class="hero">
-    <div>
-        <h1>I.F Fashion</h1>
-        <p>Premium embroidery & custom fashion designs crafted with precision and passion.</p>
-    </div>
-</section>
-
-<!-- ABOUT -->
 <section class="section">
-    <h2>Our Craft</h2>
-    <p>
-        Since 2017, I.F Fashion has been delivering high-quality embroidery and
-        custom fashion designs using advanced machines and skilled craftsmanship.
-        Every design is made with attention to detail and perfection.
+    <h2 class="section-title">Inside Our Production Studio</h2>
+    <p class="section-desc">
+    A glimpse into our embroidery production studio, where advanced machines
+    and skilled craftsmanship come together to create high-quality work
+    with precision and consistency.
     </p>
-</section>
 
-<!-- WORK -->
-<section class="section">
-    <h2>Our Work</h2>
 
     {% if home_images %}
-    <div class="grid">
+    <div class="gallery">
         {% for image in home_images %}
-            <img src="{{ url_for('static', filename='images/home/' ~ image) }}">
+            <div class="gallery-item">
+                <img
+                    src="{{ url_for('static', filename='images/home/' ~ image) }}"
+                    onclick="openLightbox(this.src)"
+                >
+            </div>
         {% endfor %}
     </div>
     {% else %}
-        <p>No designs uploaded yet.</p>
+        <p class="empty-text">No designs uploaded yet.</p>
     {% endif %}
 </section>
 
-<!-- CTA -->
-<section class="cta">
-    <h2>Have a Design in Mind?</h2>
-    <p>Upload your design and let us bring it to life.</p>
-    <a href="{{ url_for('customer') }}">Upload Your Design</a>
-</section>
+{% endblock %}
+
+
+<!-- CTA SECTION -->
+    <section style="
+        margin-top: 60px;
+        background: #111;
+        color: white;
+        text-align: center;
+        padding: 80px 20px;
+        border-radius: 14px;
+    ">
+        <h2 style="color:white;">Have a Design in Mind?</h2>
+        <p style="opacity:0.85;margin-top:10px;">
+            Upload your design and let us bring it to life.
+        </p>
+
+        <a href="{{ url_for('customer') }}"
+           style="
+           display:inline-block;
+           margin-top:30px;
+           padding:14px 40px;
+           background:white;
+           color:black;
+           text-decoration:none;
+           border-radius:40px;
+           font-weight:600;
+           transition:0.3s;
+           ">
+           Upload Your Design
+        </a>
+    </section>
 
 <!-- FOOTER -->
 <footer>
