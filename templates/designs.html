@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Our Embroidery & Saree Designs</h2>
+
+<p>
+Below are some examples of our embroidery and saree work.
+These designs are done using Baba embroidery machines.
+</p>
+
+<div class="gallery">
+    {% for img in images %}
+    <div class="gallery-card">
+        <img src="{{ url_for('static', filename='images/designs/' + img) }}"
+             onclick="openLightbox(this.src)">
+        <div class="overlay">
+            <span>View Design</span>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+
+{% endblock %}

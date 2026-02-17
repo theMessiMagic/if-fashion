@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>Admin Dashboard</h2>
+
+<h3>Upload Design</h3>
+<form method="POST" enctype="multipart/form-data">
+    <input type="file" name="image" required>
+    <button type="submit">Upload</button>
+</form>
+
+<h3>Your Designs</h3>
+{% for img in designs %}
+    <div>
+        <img src="{{ url_for('static', filename='images/designs/' + img) }}" width="150">
+        <a href="/admin/delete/{{ img }}">Delete</a>
+    </div>
+{% endfor %}
+
+<hr>
+
+<h3>Customer Submissions</h3>
+{% for c in customers %}
+    <div style="border:1px solid #ccc; margin:10px; padding:10px;">
+        <p><b>Name:</b> {{ c.name }}</p>
+        <p><b>Phone:</b> {{ c.phone }}</p>
+        <p><b>Message:</b> {{ c.message }}</p>
+        <p><b>Time:</b> {{ c.time }}</p>
+        <img src="{{ url_for('static', filename='images/customer_uploads/' + c.image) }}" width="150">
+    </div>
+{% endfor %}
+
+<a href="/logout">Logout</a>
+
+{% endblock %}

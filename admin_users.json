@@ -1,0 +1,8 @@
+{
+  "admins": [
+    {
+      "username": "Minhajul",
+      "password": "scrypt:32768:8:1$LJQH4SjUCbh1VL71$554048ab313209ba1d90ac1988b3b2f9818951b4e07147b0b1ad1d511d240fa6712f4b05ae6b813afc2ced927b335c36ea65d7b6cb39ee29c58dec6ab33cc3df"
+    }
+  ]
+}

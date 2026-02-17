@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>Customer Contact</h2>
+
+<form method="POST" enctype="multipart/form-data">
+    <input name="name" placeholder="Your Name" required><br><br>
+    <input name="phone" placeholder="Phone Number" required><br><br>
+    <input type="file" name="image" required><br><br>
+    <textarea name="message" placeholder="Message (optional)"></textarea><br><br>
+    <button type="submit">Submit</button>
+</form>
+
+{% endblock %}
