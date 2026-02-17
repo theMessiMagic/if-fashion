@@ -5,6 +5,25 @@ from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
+
+@app.route("/health")
+def health():
+    return "OK", 200
+
+@app.before_first_request
+def setup_app():
+    os.makedirs(DESIGN_FOLDER, exist_ok=True)
+    os.makedirs(CUSTOMER_FOLDER, exist_ok=True)
+
+    if not os.path.exists(ADMIN_DB):
+        with open(ADMIN_DB, "w", encoding="utf-8") as f:
+            json.dump({"admins": []}, f)
+
+    if not os.path.exists(CUSTOMER_DB):
+        with open(CUSTOMER_DB, "w", encoding="utf-8") as f:
+            json.dump({"submissions": []}, f)
+
+
 app.secret_key = "CHANGE_THIS_SECRET_KEY"
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -16,8 +35,8 @@ CUSTOMER_DB = os.path.join(BASE_DIR, "customer_submissions.json")
 
 ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "webp"}
 
-os.makedirs(DESIGN_FOLDER, exist_ok=True)
-os.makedirs(CUSTOMER_FOLDER, exist_ok=True)
+
+
 
 
 def allowed_file(filename):
