@@ -7,12 +7,16 @@
 <body>
 
 <nav>
+    <nav>
     <a href="/">Home</a>
     <a href="/about">About</a>
     <a href="/designs">Designs</a>
     <a href="/customer">Customer Contact</a>
     <a href="/contact">Contact</a>
     <a href="/track">Track Request</a>
+    <a href="/careers">Employee</a>
+</nav>
+
 
 </nav>
 <section class="hero">
@@ -46,6 +50,49 @@ function closeLightbox() {
     document.getElementById("lightbox").style.display = "none";
 }
 </script>
+
+<!-- Chatbot -->
+<div id="chatbot-toggle" style="
+    position:fixed;
+    bottom:20px;
+    right:20px;
+    background:black;
+    color:white;
+    padding:12px;
+    border-radius:50%;
+    cursor:pointer;
+    z-index:9999;
+">💬</div>
+
+<div id="chatbot-box" style="
+    position:fixed;
+    bottom:80px;
+    right:20px;
+    width:300px;
+    background:white;
+    border-radius:10px;
+    display:none;
+    box-shadow:0 0 10px rgba(0,0,0,.3);
+    z-index:9999;
+">
+    <div style="background:black;color:white;padding:10px;">
+        I.F Fashion Assistant
+    </div>
+
+    <div id="chatbot-messages" style="
+        height:220px;
+        padding:10px;
+        overflow-y:auto;
+        font-size:14px;
+    "></div>
+
+    <input id="chatbot-input"
+           placeholder="Ask something..."
+           style="width:100%;padding:10px;border:none;border-top:1px solid #ccc;">
+</div>
+
+<script src="{{ url_for('static', filename='js/chatbot.js') }}"></script>
+
 
 </body>
 </html>

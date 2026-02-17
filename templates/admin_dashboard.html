@@ -114,9 +114,87 @@
 </div>
 {% endfor %}
 
+<hr>
+
+<!-- ===== EMPLOYEE / LABOUR APPLICATIONS ===== -->
+<h2>Labour / Employee Applications</h2>
+
+{% if employees %}
+    {% for e in employees %}
+    <div style="border:1px solid #999; padding:15px; margin-bottom:15px; background:#fafafa;">
+
+        <p>
+            <strong>Track ID:</strong> {{ e.track_id }} <br>
+            <strong>Name:</strong> {{ e.name }} <br>
+            <strong>Phone:</strong> {{ e.phone }} <br>
+            <strong>Aadhaar:</strong>
+**** **** {{ e.aadhar[-4:] if e.aadhar else "XXXX" }} <br>
+            <strong>Work Type:</strong> {{ e.work_type }} <br>
+            <strong>Experience:</strong> {{ e.experience }} <br>
+
+            <strong>Status:</strong>
+            {% if e.status == 'approved' %}
+                <span style="color:green;font-weight:bold;">Approved</span>
+            {% elif e.status == 'rejected' %}
+                <span style="color:red;font-weight:bold;">Rejected</span>
+            {% else %}
+                <span style="color:orange;font-weight:bold;">Pending</span>
+            {% endif %}
+            <br>
+
+            <strong>Salary Model:</strong> {{ e.salary_model or "Not decided" }} <br>
+            <strong>Admin Note:</strong> {{ e.admin_note or "—" }} <br>
+            <strong>Applied On:</strong> {{ e.time }}
+        </p>
+
+        <p>
+            <a href="tel:{{ e.phone }}">📞 Call</a> |
+            <a href="https://wa.me/91{{ e.phone }}" target="_blank">💬 WhatsApp</a>
+        </p>
+
+        {% if e.aadhar_file %}
+            <a href="{{ url_for('static', filename='employee_docs/' + e.aadhar_file) }}"
+               target="_blank">📄 View Aadhaar</a>
+        {% endif %}
+
+        <br><br>
+
+        <form method="POST"
+              action="{{ url_for('update_employee_status', index=loop.index0, status='approved') }}"
+              style="display:inline;">
+            <button>Approve</button>
+        </form>
+
+        <form method="POST"
+              action="{{ url_for('update_employee_status', index=loop.index0, status='rejected') }}"
+              style="display:inline;">
+            <button style="background:red;color:white;">Reject</button>
+        </form>
+
+        <br><br>
+
+        <form method="POST"
+              action="{{ url_for('update_employee_note', index=loop.index0) }}">
+            <input name="salary_model"
+                   placeholder="Salary / Per-piece model"
+                   value="{{ e.salary_model }}"><br><br>
+
+            <textarea name="admin_note"
+                      placeholder="Admin notes">{{ e.admin_note }}</textarea><br><br>
+
+            <button type="submit">Save Notes</button>
+        </form>
+
+    </div>
+    {% endfor %}
+{% else %}
+    <p>No labour applications yet.</p>
+{% endif %}
+
+
 
 <br>
 <a href="{{ url_for('logout') }}">Logout</a>
 
 </body>
-</h
+</html>

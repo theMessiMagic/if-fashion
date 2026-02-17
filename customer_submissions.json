@@ -1,22 +1,3 @@
 {
-  "submissions": [
-    {
-      "track_id": "IF-260217-0001",
-      "name": "gtrdh",
-      "phone": "hrtfd",
-      "image": "gtrdh_Screenshot_2026-02-11_21-29-14.png",
-      "message": "",
-      "time": "2026-02-17 22:24",
-      "status": "approved"
-    },
-    {
-      "track_id": "IF-260217-0002",
-      "name": "vtrd",
-      "phone": "vrtefdgb",
-      "image": "vtrd_Screenshot_2026-02-17_19-38-25.png",
-      "message": "vdfv",
-      "time": "2026-02-17 22:26",
-      "status": "rejected"
-    }
-  ]
+  "submissions": []
 }

@@ -1,0 +1,61 @@
+<h2>Work With Us</h2>
+<p>We are hiring skilled embroidery machine operators. Fair payment guaranteed.</p>
+
+
+<form method="POST" enctype="multipart/form-data">
+
+    <input name="name" placeholder="Full Name" required><br><br>
+
+    <input name="phone" type="tel" placeholder="Phone Number" required>
+    
+    <input name="aadhar" type="text" placeholder="Aadhaar Number" required>
+    <small>Your Aadhaar details are kept private and secure.</small><br><br>
+
+
+
+    <label>Aadhaar Upload (optional)</label><br>
+    <input type="file" name="aadhar_file"
+           accept=".jpg,.jpeg,.png,.pdf"><br><br>
+
+    <select name="work_type" required>
+        <option value="">Select Work Type</option>
+        <option>Sequin</option>
+        <option>Cording</option>
+        <option>Multi</option>
+        <option>Sequin + Cording</option>
+        <option>Multi + Sequin</option>
+        <option>Multi + Cording</option>
+        <option>Multi + Cording + Sequin</option>
+    </select><br><br>
+
+    <input name="experience"
+           placeholder="Experience (e.g. 6 months / 2 years)"
+           required><br><br>
+
+    <textarea name="message"
+              placeholder="Message (optional)"></textarea><br><br>
+
+    <button type="submit">Apply for Work</button>
+
+</form>
+
+{% if employee_track_id %}
+<div style="margin-top:15px; padding:15px; border:1px solid green;">
+    <strong>Your Application Track ID:</strong>
+    <span style="font-size:18px;">{{ employee_track_id }}</span><br>
+    <small>Save this ID to track your application.</small>
+</div>
+{% endif %}
+
+<a href="/track"
+   style="
+   display:inline-block;
+   margin-top:15px;
+   padding:10px 20px;
+   background:#111;
+   color:white;
+   text-decoration:none;
+   border-radius:20px;
+   ">
+   Track Your Request
+</a>

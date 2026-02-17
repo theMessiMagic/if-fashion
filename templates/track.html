@@ -7,7 +7,7 @@
 <form method="POST" style="max-width:400px;">
     <input type="text"
            name="track_id"
-           placeholder="Enter your Track ID"
+           placeholder="Enter your Track ID (IF- / EMP-)"
            required
            style="width:100%; padding:10px; margin-bottom:10px;">
     <button type="submit">Track</button>
@@ -19,25 +19,54 @@
 
 {% if result %}
 <hr>
-<h3>Request Status</h3>
+
+{% if track_type == "customer" %}
+<h3>Customer Design Request</h3>
 
 <p>
     <strong>Track ID:</strong> {{ result.track_id }} <br>
     <strong>Name:</strong> {{ result.name }} <br>
     <strong>Phone:</strong> {{ result.phone }} <br>
+
     <strong>Status:</strong>
-
     {% if result.status == 'approved' %}
-        <span style="color:green;">Approved</span>
+        <span style="color:green;font-weight:bold;">Approved</span>
     {% elif result.status == 'rejected' %}
-        <span style="color:red;">Rejected</span>
+        <span style="color:red;font-weight:bold;">Rejected</span>
     {% else %}
-        <span style="color:orange;">Pending</span>
+        <span style="color:orange;font-weight:bold;">Pending</span>
     {% endif %}
-
     <br>
-    <strong>Submitted:</strong> {{ result.time }}
+
+    <strong>Submitted On:</strong> {{ result.time }}
 </p>
+
+{% elif track_type == "employee" %}
+<h3>Labour / Employee Application</h3>
+
+<p>
+    <strong>Track ID:</strong> {{ result.track_id }} <br>
+    <strong>Name:</strong> {{ result.name }} <br>
+    <strong>Phone:</strong> {{ result.phone }} <br>
+    <strong>Work Type:</strong> {{ result.work_type }} <br>
+    <strong>Experience:</strong> {{ result.experience }} <br>
+
+    <strong>Status:</strong>
+    {% if result.status == 'approved' %}
+        <span style="color:green;font-weight:bold;">Approved</span>
+    {% elif result.status == 'rejected' %}
+        <span style="color:red;font-weight:bold;">Rejected</span>
+    {% else %}
+        <span style="color:orange;font-weight:bold;">Pending</span>
+    {% endif %}
+    <br>
+
+    <strong>Salary Model:</strong> {{ result.salary_model or "Not decided yet" }} <br>
+    <strong>Admin Note:</strong> {{ result.admin_note or "—" }} <br>
+    <strong>Applied On:</strong> {{ result.time }}
+</p>
+
+{% endif %}
 {% endif %}
 
 {% endblock %}
