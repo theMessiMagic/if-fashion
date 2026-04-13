@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 
 from dotenv import load_dotenv
-import google.generativeai as genai
+import requests
 import uuid
 
 import os, json
@@ -16,9 +16,6 @@ app.secret_key = "CHANGE_THIS_SECRET_KEY"
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 load_dotenv()
-
-genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
-model = genai.GenerativeModel("gemini-2.5-flash-lite")
 
 HOME_FOLDER = os.path.join(BASE_DIR, "static", "images", "home")
 DESIGN_FOLDER = os.path.join(BASE_DIR, "static", "images", "designs")
@@ -452,102 +449,67 @@ def update_employee_note(index):
     return redirect(url_for("admin_dashboard"))
 
 
-# ---------------- AI CHAT ROUTE ----------------
+# ---------------- AI CHAT ROUTE (AI PIPE VERSION) ----------------
 
 @app.route("/chat", methods=["POST"])
 def chat():
-    print("GEMINI KEY:", bool(os.getenv("GEMINI_API_KEY")))
-
     user_msg = request.json.get("message")
+    api_key = os.getenv("GEMINI_API_KEY") # This will be your AI Pipe Token
+
     if "chat_history" not in session:
         session["chat_history"] = []
 
-    session["chat_history"].append({
-        "role": "user",
-        "text": user_msg
-    })
+    session["chat_history"].append({"role": "user", "text": user_msg})
 
     try:
         history_text = ""
         for msg in session["chat_history"][-6:]:
             history_text += f"{msg['role']}: {msg['text']}\n"
 
-        response = model.generate_content(
-        f"""
-    You are the official AI assistant for I.F Fashion, an embroidery and saree design business in India.
+        # AI Pipe Configuration
+        url = "https://aipipe.org/geminiv1beta/models/gemini-1.5-flash:generateContent"
+        headers = {
+            "Content-Type": "application/json",
+            "x-goog-api-key": api_key
+        }
+        
+        system_instruction = f"""
+        You are the official AI assistant for I.F Fashion, an embroidery and saree design business in India.
+        Services: Embroidery work, saree embroidery, custom designs.
+        Order processing: 3–5 business days. Customers get a Track ID.
+        Reply in the SAME language as the user. Keep it short.
+        """
 
-    Business details:
-    - Services: Embroidery work, saree embroidery, custom designs
-    - Customers can upload designs through the website
-    - Order processing time: 3–5 business days
-    - Customers receive a Track ID after submission
-    - Customers can track order status using Track ID
-    - Admin reviews requests and marks them as Pending, Approved, or Rejected
-    - Be polite, helpful, and business-focused
-    - If you don’t know something, say admin will assist
+        payload = {
+            "contents": [{
+                "parts": [{
+                    "text": f"{system_instruction}\n\nHistory:\n{history_text}\n\nUser: {user_msg}"
+                }]
+            }]
+        }
 
-    RULES:
-    - Reply in the SAME language as the user
-    - Keep answers short and clear
-    - Do NOT make up prices
-    - Encourage customers to upload designs or contact admin
+        response = requests.post(url, headers=headers, json=payload)
+        res_data = response.json()
 
-    Customer conversation so far:
-    {history_text}
+        # Extracting the reply from AI Pipe/Gemini response structure
+        reply = res_data['candidates'][0]['content']['parts'][0]['text'].strip()
 
-    Customer message:
-    {user_msg}
-
-    """
-    )
-
-        reply = ""
-
-        # safely extract text from Gemini response
-        if hasattr(response, "text") and response.text:
-            reply = response.text.strip()
-        elif hasattr(response, "candidates"):
-            try:
-                reply = response.candidates[0].content.parts[0].text.strip()
-            except Exception:
-                reply = ""
-
-        # fallback ONLY if truly empty
-        if not reply:
-            raise ValueError("Empty AI response")
-
-
-        # save assistant reply to memory
-        session["chat_history"].append({
-            "role": "assistant",
-            "text": reply
-        })
-
-        # keep last 6 messages only
+        session["chat_history"].append({"role": "assistant", "text": reply})
         session["chat_history"] = session["chat_history"][-6:]
 
         return {"reply": reply, "admin": False}
-
 
     except Exception as e:
         print("CHAT ERROR:", e)
         data = load_chat()
         ticket_id = str(uuid.uuid4())[:8]
-
-        data["pending"].append({
-            "id": ticket_id,
-            "question": user_msg
-        })
-
+        data["pending"].append({"id": ticket_id, "question": user_msg})
         save_chat(data)
-
         return {
             "reply": "Our admin will reply shortly.",
             "admin": True,
             "ticket_id": ticket_id
         }
-
-
 # ---------------- CHECK ADMIN REPLY ----------------
 
 @app.route("/chat/check/<ticket_id>")
