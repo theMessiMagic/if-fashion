@@ -11,6 +11,7 @@
 <h2>Upload Home Page Images</h2>
 
 <form method="POST" enctype="multipart/form-data">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <input type="file" name="home_image" required>
     <button type="submit">Upload to Home</button>
 </form>
@@ -24,6 +25,7 @@
             <form method="POST"
                   action="{{ url_for('delete_home_image', filename=img) }}"
                   onsubmit="return confirm('Delete this home image?');">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <button type="submit" style="background:red;color:white;">
                     Delete
                 </button>
@@ -40,6 +42,7 @@
 <h2>Upload Design Images</h2>
 
 <form method="POST" enctype="multipart/form-data">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <input type="file" name="design_image" required>
     <button type="submit">Upload Design</button>
 </form>
@@ -53,6 +56,7 @@
             <form method="POST"
                   action="{{ url_for('delete_design_image', filename=img) }}"
                   onsubmit="return confirm('Delete this design?');">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <button type="submit" style="background:red;color:white;">
                     Delete
                 </button>
@@ -95,12 +99,14 @@
     <form method="POST"
           action="{{ url_for('update_customer_status', index=loop.index0, status='approved') }}"
           style="display:inline;">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <button type="submit">Approve</button>
     </form>
 
     <form method="POST"
           action="{{ url_for('update_customer_status', index=loop.index0, status='rejected') }}"
           style="display:inline;">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <button type="submit">Reject</button>
     </form>
     
@@ -108,6 +114,7 @@
           action="{{ url_for('delete_customer_submission', index=loop.index0) }}"
           style="display:inline;"
           onsubmit="return confirm('Delete this submission?');">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <button style="background:red;color:white;">Delete</button>
     </form>
 
@@ -162,12 +169,14 @@
         <form method="POST"
               action="{{ url_for('update_employee_status', index=loop.index0, status='approved') }}"
               style="display:inline;">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <button>Approve</button>
         </form>
 
         <form method="POST"
               action="{{ url_for('update_employee_status', index=loop.index0, status='rejected') }}"
               style="display:inline;">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <button style="background:red;color:white;">Reject</button>
         </form>
 
@@ -175,6 +184,7 @@
 
         <form method="POST"
               action="{{ url_for('update_employee_note', index=loop.index0) }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <input name="salary_model"
                    placeholder="Salary / Per-piece model"
                    value="{{ e.salary_model }}"><br><br>

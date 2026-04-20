@@ -113,13 +113,10 @@ def designs():
     images = os.listdir(DESIGN_FOLDER)
     return render_template("designs.html", images=images)
 
-@app.route("/contact")
-def contact():
-    return render_template("contact.html")
 
 # ---------------- CUSTOMER CONTACT ----------------
 
-@app.route("/customer", methods=["GET", "POST"])
+@app.route("/customer_contact", methods=["GET", "POST"])
 def customer():
     if request.method == "POST":
         name = request.form.get("name")
@@ -449,64 +446,93 @@ def update_employee_note(index):
     return redirect(url_for("admin_dashboard"))
 
 
-# ---------------- AI CHAT ROUTE (AI PIPE VERSION) ----------------
+# ---------------- AI CHAT ROUTE (AI PIPE VERSION) ---------------- 
 
 @app.route("/chat", methods=["POST"])
 def chat():
     user_msg = request.json.get("message")
-    api_key = os.getenv("GEMINI_API_KEY") # This will be your AI Pipe Token
+    api_key = os.getenv("AIPIPE_TOKEN") 
+    
+    
 
     if "chat_history" not in session:
         session["chat_history"] = []
-
     session["chat_history"].append({"role": "user", "text": user_msg})
 
     try:
-        history_text = ""
-        for msg in session["chat_history"][-6:]:
-            history_text += f"{msg['role']}: {msg['text']}\n"
-
-        # AI Pipe Configuration
-        url = "https://aipipe.org/geminiv1beta/models/gemini-1.5-flash:generateContent"
+        url = "https://aipipe.org/openrouter/v1/chat/completions"
         headers = {
-            "Content-Type": "application/json",
-            "x-goog-api-key": api_key
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {api_key}"
         }
         
-        system_instruction = f"""
-        You are the official AI assistant for I.F Fashion, an embroidery and saree design business in India.
-        Services: Embroidery work, saree embroidery, custom designs.
-        Order processing: 3–5 business days. Customers get a Track ID.
-        Reply in the SAME language as the user. Keep it short.
-        """
+        system_instruction = """
+            You are the official AI assistant for I.F Fashion.
+
+            About the company:
+            - We provide custom fashion design services.
+            - Customers can upload their own design ideas and images.
+            - Our team reviews submissions and creates tailored fashion products.
+            - Users receive a tracking ID to track their request status.
+            - We also hire employees through the careers section.
+
+            How the website works:
+            1. Customer uploads design via the website.
+            2. Admin reviews and approves/rejects the request.
+            3. Work starts after approval.
+            4. Customer can track status using tracking ID.
+
+            Customer Help:
+            - If user wants help, guide them step-by-step.
+            - If they ask about contact, provide this:
+
+            Contact Page:
+            http://127.0.0.1:5000/contact
+
+            - Tell users they can reach out via the contact form for support.
+
+            Admin Assistance:
+            - If the AI cannot solve something, inform the user:
+            "I will connect you to a human assistant."
+            - Explain that their query will be forwarded to admin support.
+
+            Your behavior:
+            - Answer ONLY based on I.F Fashion services.
+            - Be clear, helpful, and slightly conversational.
+            - Always guide users on what to do next.
+            - If question is unrelated, politely say you only assist with this website.
+            """
 
         payload = {
-            "contents": [{
-                "parts": [{
-                    "text": f"{system_instruction}\n\nHistory:\n{history_text}\n\nUser: {user_msg}"
-                }]
-            }]
-        }
+        "model": "openai/gpt-4.1-nano",
+        "messages": [
+        {"role": "system", "content": "You are the AI for I.F Fashion. Keep it short."},
+        {"role": "user", "content": user_msg}
+        ]
+    }
+        # 3. REQUEST WITH TIMEOUT
+        response = requests.post(url, headers=headers, json=payload, timeout=15)
+        
+        # Log the status for debugging
+        print(f"Status: {response.status_code}")
 
-        response = requests.post(url, headers=headers, json=payload)
-        res_data = response.json()
+        if response.status_code == 200:
+            res_data = response.json()
+            reply = res_data["choices"][0]["message"]["content"].strip()
+            return {"reply": reply, "admin": False}
 
-        # Extracting the reply from AI Pipe/Gemini response structure
-        reply = res_data['candidates'][0]['content']['parts'][0]['text'].strip()
-
-        session["chat_history"].append({"role": "assistant", "text": reply})
-        session["chat_history"] = session["chat_history"][-6:]
-
-        return {"reply": reply, "admin": False}
+        print("API Failed Response:", response.text)
+        raise Exception("AI Response Failed")
 
     except Exception as e:
-        print("CHAT ERROR:", e)
+        print("CHAT ERROR:", str(e))
+        # FALLBACK: Create admin ticket so customer isn't stuck
         data = load_chat()
         ticket_id = str(uuid.uuid4())[:8]
         data["pending"].append({"id": ticket_id, "question": user_msg})
         save_chat(data)
         return {
-            "reply": "Our admin will reply shortly.",
+            "reply": "I'm connecting you to a human assistant. One moment...",
             "admin": True,
             "ticket_id": ticket_id
         }
