@@ -1,61 +1,53 @@
-<h2>Work With Us</h2>
-<p>We are hiring skilled embroidery machine operators. Fair payment guaranteed.</p>
+{% extends "base.html" %}
+{% block content %}
 
+<section class="section form-section">
+    <h2>Join Our Production Team</h2>
+    <p>We are actively hiring skilled embroidery machine operators with reliable execution quality.</p>
 
-<form method="POST" enctype="multipart/form-data">
+    <form method="POST" enctype="multipart/form-data" class="form-card">
+        <input name="name" placeholder="Candidate Full Name" required>
 
-    <input name="name" placeholder="Full Name" required><br><br>
+        <input name="phone" type="tel" inputmode="numeric" pattern="[0-9]{10}" minlength="10" maxlength="10" placeholder="Mobile Number (10 digits)" required>
+        <input name="aadhar" type="text" inputmode="numeric" pattern="[0-9]{12}" minlength="12" maxlength="12" placeholder="Aadhaar Number (12 digits)" required>
+        <small>Your Aadhaar data is securely handled and used only for verification.</small>
 
-    <input name="phone" type="tel" placeholder="Phone Number" required>
-    
-    <input name="aadhar" type="text" placeholder="Aadhaar Number" required>
-    <small>Your Aadhaar details are kept private and secure.</small><br><br>
+        <label>Aadhaar File Upload (optional)</label>
+        <input type="file" name="aadhar_file" accept=".jpg,.jpeg,.png,.pdf">
 
+        <label>Resume Upload (optional)</label>
+        <input type="file" name="resume_file" accept=".pdf,.doc,.docx">
 
+        <select name="work_type" required>
+            <option value="">Select Embroidery Skill</option>
+            <option>Sequin</option>
+            <option>Cording</option>
+            <option>Multi</option>
+            <option>Sequin + Cording</option>
+            <option>Multi + Sequin</option>
+            <option>Multi + Cording</option>
+            <option>Multi + Cording + Sequin</option>
+        </select>
 
-    <label>Aadhaar Upload (optional)</label><br>
-    <input type="file" name="aadhar_file"
-           accept=".jpg,.jpeg,.png,.pdf"><br><br>
+        <input name="experience"
+               placeholder="Experience (example: 6 months / 2 years)"
+               required>
 
-    <select name="work_type" required>
-        <option value="">Select Work Type</option>
-        <option>Sequin</option>
-        <option>Cording</option>
-        <option>Multi</option>
-        <option>Sequin + Cording</option>
-        <option>Multi + Sequin</option>
-        <option>Multi + Cording</option>
-        <option>Multi + Cording + Sequin</option>
-    </select><br><br>
+        <textarea name="message"
+                  placeholder="Share your shift preference, machine familiarity, or additional notes (optional)"></textarea>
 
-    <input name="experience"
-           placeholder="Experience (e.g. 6 months / 2 years)"
-           required><br><br>
+        <button type="submit">Submit Application</button>
+    </form>
 
-    <textarea name="message"
-              placeholder="Message (optional)"></textarea><br><br>
+    {% if employee_track_id %}
+    <div class="info-box success-box">
+        <strong>Your Application ID:</strong>
+        <span class="track-value">{{ employee_track_id }}</span>
+        <small>Save this ID to monitor your hiring status.</small>
+    </div>
+    {% endif %}
 
-    <button type="submit">Apply for Work</button>
+    <a href="/track" class="cta-pill">Track Application</a>
+</section>
 
-</form>
-
-{% if employee_track_id %}
-<div style="margin-top:15px; padding:15px; border:1px solid green;">
-    <strong>Your Application Track ID:</strong>
-    <span style="font-size:18px;">{{ employee_track_id }}</span><br>
-    <small>Save this ID to track your application.</small>
-</div>
-{% endif %}
-
-<a href="/track"
-   style="
-   display:inline-block;
-   margin-top:15px;
-   padding:10px 20px;
-   background:#111;
-   color:white;
-   text-decoration:none;
-   border-radius:20px;
-   ">
-   Track Your Request
-</a>
+{% endblock %}

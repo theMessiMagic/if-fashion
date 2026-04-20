@@ -1,50 +1,33 @@
 {% extends "base.html" %}
 {% block content %}
 
-<h2>Customer Contact</h2>
+<section class="section form-section">
+    <h2>Start Your Custom Design Request</h2>
 
-<form method="POST" enctype="multipart/form-data">
-    <input name="name" placeholder="Your Name" required><br><br>
-    <input name="phone" placeholder="Phone Number" required><br><br>
-    <p><b>Upload Your Designs here:</b></p>
-    <input type="file" name="image" required><br><br>
-    <textarea name="message" placeholder="Message (optional)"></textarea><br><br>
-    <button type="submit">Submit</button>
-</form>
+    <form method="POST" enctype="multipart/form-data" class="form-card">
+        <input name="name" placeholder="Full Name" required>
+        <input name="phone" type="tel" inputmode="numeric" pattern="[0-9]{10}" minlength="10" maxlength="10" placeholder="Mobile Number (10 digits)" required>
+        <p><b>Upload Your Design Reference</b></p>
+        <input type="file" name="image" required>
+        <textarea name="message" placeholder="Share fabric notes, color ideas, sizing, or finishing instructions (optional)"></textarea>
+        <button type="submit">Submit Design Request</button>
+    </form>
 
-{% if last_track_id %}
-<div style="
-    margin-top:15px;
-    padding:15px;
-    border:1px solid #4CAF50;
-    background:#f0fff4;
-    border-radius:8px;
-">
-    <strong>Your Track ID:</strong>
-    <span style="font-size:18px;">{{ last_track_id }}</span>
-    <br>
-    <small>Save this ID to track your request.</small>
-</div>
-{% endif %}
+    {% if last_track_id %}
+    <div class="info-box success-box">
+        <strong>Your Request ID:</strong>
+        <span class="track-value">{{ last_track_id }}</span>
+        <small>Keep this ID safe to monitor progress anytime.</small>
+    </div>
+    {% endif %}
 
-<a href="/track"
-   style="
-   display:inline-block;
-   margin-top:15px;
-   padding:10px 20px;
-   background:#111;
-   color:white;
-   text-decoration:none;
-   border-radius:20px;
-   ">
-   Track Your Request
-</a>
+    <a href="/track" class="cta-pill">Track My Request</a>
 
-
-<h2>Our Contact Details </h2>
-
-<p><strong>Phone:</strong> 9474588857</p>
-<p><strong>WhatsApp:</strong>9474588857</p>
-<p><strong>Service:</strong> Embroider on clothes. For service Call or WhatsApp us.</p>
+    <div class="contact-details">
+        <h3>Direct Support</h3>
+        <p><strong>Phone:</strong> 9474588857</p>
+        <p><strong>WhatsApp:</strong> 9474588857</p>
+        <p><strong>Specialization:</strong> Premium embroidery development for apparel surfaces.</p>
+    </div>
+</section>
 {% endblock %}
-

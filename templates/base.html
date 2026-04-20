@@ -1,27 +1,25 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>I.F Fashion</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
 
-<nav>
-    <nav>
+<nav class="site-nav">
     <a href="/">Home</a>
-    <a href="/about">About</a>
-    <a href="/designs">Designs</a>
-    <a href="/customer_contact">Customer Contact</a>
-    <a href="/track">Track Request</a>
-    <a href="/careers">Employee</a>
+    <a href="/about">About Us</a>
+    <a href="/designs">Gallery</a>
+    <a href="/customer_contact">Customer</a>
+    <a href="/track">Track Status</a>
+    <a href="/careers">Employment</a>
 </nav>
-
-
-</nav>
-<section class="hero">
+<section class="hero site-hero">
     <div class="hero-content">
         <h1>I.F Fashion</h1>
-        <p>Professional Embroidery & Saree Design Services</p>
+        <p>Crafted Embroidery Excellence for Modern Fashion Brands</p>
     </div>
 </section>
 
@@ -32,7 +30,9 @@
   {% endfor %}
 {% endwith %}
 
+<main class="page-shell">
 {% block content %}{% endblock %}
+</main>
 
 <!-- Lightbox -->
 <div id="lightbox" onclick="closeLightbox()">
@@ -61,21 +61,22 @@ function closeLightbox() {
     border-radius:50%;
     cursor:pointer;
     z-index:9999;
-">💬</div>
+">Chat</div>
 
 <div id="chatbot-box" style="
     position:fixed;
     bottom:80px;
     right:20px;
-    width:300px;
+    width:340px;
     background:white;
     border-radius:10px;
     display:none;
     box-shadow:0 0 10px rgba(0,0,0,.3);
     z-index:9999;
 ">
-    <div style="background:black;color:white;padding:10px;">
-        I.F Fashion Assistant
+    <div style="background:black;color:white;padding:10px;display:flex;justify-content:space-between;align-items:center;gap:8px;">
+        <span>I.F Fashion Concierge</span>
+        <button id="chatbot-reset" type="button" style="background:#ffffff;color:#111;border:none;border-radius:999px;padding:4px 10px;font-size:12px;cursor:pointer;">Reset</button>
     </div>
 
     <div id="chatbot-messages" style="
@@ -86,7 +87,7 @@ function closeLightbox() {
     "></div>
 
     <input id="chatbot-input"
-           placeholder="Ask something..."
+           placeholder="Type here or use 'menu' for quick options"
            style="width:100%;padding:10px;border:none;border-top:1px solid #ccc;">
 </div>
 
@@ -95,3 +96,4 @@ function closeLightbox() {
 
 </body>
 </html>
+

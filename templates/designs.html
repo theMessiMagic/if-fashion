@@ -2,24 +2,25 @@
 
 {% block content %}
 
-<h2>Our Embroidery & Saree Designs</h2>
+<section class="section design-page">
+    <h2>Signature Embroidery Showcase</h2>
+    <p>
+    Explore selected pieces from our live production portfolio.
+    Each panel reflects machine precision, balanced composition, and
+    market-ready finishing.
+    </p>
 
-<p>
-Below are some examples of our embroidery and saree work.
-These designs are done using Baba embroidery machines.
-</p>
-
-<div class="gallery">
-    {% for img in images %}
-    <div class="gallery-card">
-        <img src="{{ url_for('static', filename='images/designs/' + img) }}"
-             onclick="openLightbox(this.src)">
-        <div class="overlay">
-            <span>View Design</span>
+    <div class="gallery design-gallery">
+        {% for img in images %}
+        <div class="gallery-card">
+            <img src="{{ url_for('static', filename='images/designs/' + img) }}"
+                 onclick="openLightbox(this.src)">
+            <div class="overlay">
+                <span>Open Preview</span>
+            </div>
         </div>
+        {% endfor %}
     </div>
-    {% endfor %}
-</div>
-
+</section>
 
 {% endblock %}

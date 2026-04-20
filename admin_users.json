@@ -1,8 +1,0 @@
-{
-  "admins": [
-    {
-      "username": "admin",
-      "password": "scrypt:32768:8:1$ivSW7JOGju5cmdfZ$179a5033ced40c06290a12601ed9ad4c02e7ed40190e1146aef08802529c8caeca3d188c0cd1f61f625d38764f7fd64566d8c6d681820c1dbbd2d776260298ee"
-    }
-  ]
-}

@@ -2,71 +2,72 @@
 
 {% block content %}
 
-<h2>Track Your Request</h2>
+<section class="section form-section">
+    <h2>Live Request Tracker</h2>
 
-<form method="POST" style="max-width:400px;">
-    <input type="text"
-           name="track_id"
-           placeholder="Enter your Track ID (IF- / EMP-)"
-           required
-           style="width:100%; padding:10px; margin-bottom:10px;">
-    <button type="submit">Track</button>
-</form>
+    <form method="POST" class="form-card compact-form">
+        <input type="text"
+               name="track_id"
+               placeholder="Enter Request ID (IF-xxxx or EMP-xxxx)"
+               required>
+        <button type="submit">Check Status</button>
+    </form>
 
-{% if error %}
-<p style="color:red;">{{ error }}</p>
-{% endif %}
-
-{% if result %}
-<hr>
-
-{% if track_type == "customer" %}
-<h3>Customer Design Request</h3>
-
-<p>
-    <strong>Track ID:</strong> {{ result.track_id }} <br>
-    <strong>Name:</strong> {{ result.name }} <br>
-    <strong>Phone:</strong> {{ result.phone }} <br>
-
-    <strong>Status:</strong>
-    {% if result.status == 'approved' %}
-        <span style="color:green;font-weight:bold;">Approved</span>
-    {% elif result.status == 'rejected' %}
-        <span style="color:red;font-weight:bold;">Rejected</span>
-    {% else %}
-        <span style="color:orange;font-weight:bold;">Pending</span>
+    {% if error %}
+    <p class="error-text">{{ error }}</p>
     {% endif %}
-    <br>
 
-    <strong>Submitted On:</strong> {{ result.time }}
-</p>
+    {% if result %}
+    <div class="result-panel">
+        {% if track_type == "customer" %}
+        <h3>Customer Design Submission</h3>
 
-{% elif track_type == "employee" %}
-<h3>Labour / Employee Application</h3>
+        <p>
+            <strong>Track ID:</strong> {{ result.track_id }} <br>
+            <strong>Name:</strong> {{ result.name }} <br>
+            <strong>Phone:</strong> {{ result.phone }} <br>
 
-<p>
-    <strong>Track ID:</strong> {{ result.track_id }} <br>
-    <strong>Name:</strong> {{ result.name }} <br>
-    <strong>Phone:</strong> {{ result.phone }} <br>
-    <strong>Work Type:</strong> {{ result.work_type }} <br>
-    <strong>Experience:</strong> {{ result.experience }} <br>
+            <strong>Status:</strong>
+            {% if result.status == 'approved' %}
+                <span style="color:green;font-weight:bold;">Approved</span>
+            {% elif result.status == 'rejected' %}
+                <span style="color:red;font-weight:bold;">Declined</span>
+            {% else %}
+                <span style="color:orange;font-weight:bold;">In Review</span>
+            {% endif %}
+            <br>
 
-    <strong>Status:</strong>
-    {% if result.status == 'approved' %}
-        <span style="color:green;font-weight:bold;">Approved</span>
-    {% elif result.status == 'rejected' %}
-        <span style="color:red;font-weight:bold;">Rejected</span>
-    {% else %}
-        <span style="color:orange;font-weight:bold;">Pending</span>
+            <strong>Submitted At:</strong> {{ result.time }}
+        </p>
+
+        {% elif track_type == "employee" %}
+        <h3>Employee Application Record</h3>
+
+        <p>
+            <strong>Track ID:</strong> {{ result.track_id }} <br>
+            <strong>Name:</strong> {{ result.name }} <br>
+            <strong>Phone:</strong> {{ result.phone }} <br>
+            <strong>Work Type:</strong> {{ result.work_type }} <br>
+            <strong>Experience:</strong> {{ result.experience }} <br>
+
+            <strong>Status:</strong>
+            {% if result.status == 'approved' %}
+                <span style="color:green;font-weight:bold;">Approved</span>
+            {% elif result.status == 'rejected' %}
+                <span style="color:red;font-weight:bold;">Declined</span>
+            {% else %}
+                <span style="color:orange;font-weight:bold;">In Review</span>
+            {% endif %}
+            <br>
+
+            <strong>Compensation Model:</strong> {{ result.salary_model or "Not finalized yet" }} <br>
+            <strong>Team Note:</strong> {{ result.admin_note or "-" }} <br>
+            <strong>Applied At:</strong> {{ result.time }}
+        </p>
+
+        {% endif %}
+    </div>
     {% endif %}
-    <br>
-
-    <strong>Salary Model:</strong> {{ result.salary_model or "Not decided yet" }} <br>
-    <strong>Admin Note:</strong> {{ result.admin_note or "—" }} <br>
-    <strong>Applied On:</strong> {{ result.time }}
-</p>
-
-{% endif %}
-{% endif %}
+</section>
 
 {% endblock %}

@@ -1,210 +1,256 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Admin Dashboard</title>
-</head>
-<body>
+{% extends "base.html" %}
+{% block content %}
 
-<h1>Admin Dashboard</h1>
-
-<!-- ===== HOME PAGE IMAGE UPLOAD ===== -->
-<h2>Upload Home Page Images</h2>
-
-<form method="POST" enctype="multipart/form-data">
-    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-    <input type="file" name="home_image" required>
-    <button type="submit">Upload to Home</button>
-</form>
-
-<div>
-    <div>
-    {% for img in home_images %}
-        <div style="display:inline-block; margin:10px;">
-            <img src="{{ url_for('static', filename='images/home/' + img) }}" width="150"><br>
-
-            <form method="POST"
-                  action="{{ url_for('delete_home_image', filename=img) }}"
-                  onsubmit="return confirm('Delete this home image?');">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                <button type="submit" style="background:red;color:white;">
-                    Delete
-                </button>
-            </form>
+<div class="admin-shell">
+    <section class="admin-hero-panel">
+        <div>
+            <h2>Admin Dashboard</h2>
+            <p class="admin-subtitle">Oversee galleries, client requests, hiring pipeline, and support conversations in one workspace.</p>
         </div>
-    {% endfor %}
-</div>
-
-</div>
-
-<hr>
-
-<!-- ===== DESIGN IMAGE UPLOAD ===== -->
-<h2>Upload Design Images</h2>
-
-<form method="POST" enctype="multipart/form-data">
-    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-    <input type="file" name="design_image" required>
-    <button type="submit">Upload Design</button>
-</form>
-
-<div>
-    <div>
-    {% for img in designs %}
-        <div style="display:inline-block; margin:10px;">
-            <img src="{{ url_for('static', filename='images/designs/' + img) }}" width="150"><br>
-
-            <form method="POST"
-                  action="{{ url_for('delete_design_image', filename=img) }}"
-                  onsubmit="return confirm('Delete this design?');">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                <button type="submit" style="background:red;color:white;">
-                    Delete
-                </button>
-            </form>
+        <div class="admin-top-actions">
+            <a class="admin-logout" href="{{ url_for('logout') }}">Logout</a>
         </div>
-    {% endfor %}
-</div>
+    </section>
 
-</div>
+    <section class="admin-stats-grid">
+        <a href="#customer-submissions" class="admin-stat-link">
+            <article class="admin-stat-card">
+            <h3>Total Client Requests</h3>
+                <p>{{ stats.total_customers }}</p>
+            </article>
+        </a>
+        <a href="#customer-submissions" class="admin-stat-link">
+            <article class="admin-stat-card">
+            <h3>Client Requests In Review</h3>
+                <p>{{ stats.pending_customers }}</p>
+            </article>
+        </a>
+        <a href="#employee-applications" class="admin-stat-link">
+            <article class="admin-stat-card">
+            <h3>Total Employee Applications</h3>
+                <p>{{ stats.total_employees }}</p>
+            </article>
+        </a>
+        <a href="#employee-applications" class="admin-stat-link">
+            <article class="admin-stat-card">
+            <h3>Applications In Review</h3>
+                <p>{{ stats.pending_employees }}</p>
+            </article>
+        </a>
+        <a href="#support-tickets" class="admin-stat-link">
+            <article class="admin-stat-card">
+            <h3>Open Support Tickets</h3>
+                <p>{{ stats.pending_tickets }}</p>
+            </article>
+        </a>
+    </section>
 
-<hr>
+    <section class="admin-panel" id="gallery-management">
+        <h3>Visual Gallery Management</h3>
 
-<!-- ===== CUSTOMER SUBMISSIONS ===== -->
-<h2>Customer Submissions</h2>
+        <div class="admin-upload-grid">
+            <div class="admin-upload-box">
+                <h4>Homepage Visuals</h4>
+                <form method="POST" enctype="multipart/form-data" class="admin-upload-form">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <input type="file" name="home_image" required>
+                    <button type="submit">Publish To Homepage</button>
+                </form>
 
-{% for c in customers %}
-<div style="border:1px solid #ccc; padding:15px; margin-bottom:15px;">
+                <div class="admin-image-grid">
+                    {% for img in home_images %}
+                        <div class="admin-image-card">
+                            <img src="{{ url_for('static', filename='images/home/' + img) }}" alt="Home image">
+                            <form method="POST"
+                                  action="{{ url_for('delete_home_image', filename=img) }}"
+                                  onsubmit="return confirm('Delete this home image?');">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit" class="danger">Remove Image</button>
+                            </form>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
 
-    <p>
-        <strong>Track ID:</strong> {{ c.track_id }} <br>
-        <strong>Name:</strong> {{ c.name }} <br>
-        <strong>Phone:</strong> {{ c.phone }} <br>
-        <strong>Message:</strong> {{ c.message }} <br>
-        <strong>Status:</strong>
+            <div class="admin-upload-box">
+                <h4>Design Portfolio Visuals</h4>
+                <form method="POST" enctype="multipart/form-data" class="admin-upload-form">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <input type="file" name="design_image" required>
+                    <button type="submit">Publish To Gallery</button>
+                </form>
 
-            {% if c.status == 'approved' %}
-                <span style="font-weight:bold; color:green;">Approved</span>
-            {% elif c.status == 'rejected' %}
-                <span style="font-weight:bold; color:red;">Rejected</span>
-            {% else %}
-                <span style="font-weight:bold; color:orange;">Pending</span>
-            {% endif %}
+                <div class="admin-image-grid">
+                    {% for img in designs %}
+                        <div class="admin-image-card">
+                            <img src="{{ url_for('static', filename='images/designs/' + img) }}" alt="Design image">
+                            <form method="POST"
+                                  action="{{ url_for('delete_design_image', filename=img) }}"
+                                  onsubmit="return confirm('Delete this design image?');">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit" class="danger">Remove Image</button>
+                            </form>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </section>
 
-    </p>
+    <section class="admin-panel" id="customer-submissions">
+        <h3>Client Design Submissions</h3>
 
-    <img src="{{ url_for('static', filename='images/customer_uploads/' + c.image) }}"
-         width="150"><br><br>
+        {% if customers %}
+            <div class="admin-list-grid">
+                {% for c in customers %}
+                    <article class="admin-entry-card">
+                        <div class="admin-entry-head">
+                            <strong>{{ c.track_id }}</strong>
+                            <span class="status-pill status-{{ c.status }}">
+                                {% if c.status == 'pending' %}In Review{% elif c.status == 'rejected' %}Declined{% else %}Approved{% endif %}
+                            </span>
+                        </div>
 
-    <!-- STATUS BUTTONS -->
-    <form method="POST"
-          action="{{ url_for('update_customer_status', index=loop.index0, status='approved') }}"
-          style="display:inline;">
-        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-        <button type="submit">Approve</button>
-    </form>
+                        <p><strong>Name:</strong> {{ c.name }}</p>
+                        <p><strong>Phone:</strong> {{ c.phone }}</p>
+                        <p><strong>Message:</strong> {{ c.message or 'N/A' }}</p>
+                        <p><strong>Submitted:</strong> {{ c.time }}</p>
 
-    <form method="POST"
-          action="{{ url_for('update_customer_status', index=loop.index0, status='rejected') }}"
-          style="display:inline;">
-        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-        <button type="submit">Reject</button>
-    </form>
-    
-    <form method="POST"
-          action="{{ url_for('delete_customer_submission', index=loop.index0) }}"
-          style="display:inline;"
-          onsubmit="return confirm('Delete this submission?');">
-        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-        <button style="background:red;color:white;">Delete</button>
-    </form>
+                        {% if c.image %}
+                            <img class="admin-proof" src="{{ url_for('static', filename='images/customer_uploads/' + c.image) }}" alt="Customer upload">
+                        {% endif %}
 
-</div>
-{% endfor %}
+                        <div class="admin-action-row">
+                            <form method="POST" action="{{ url_for('update_customer_status', submission_id=c.id, status='approved') }}">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit">Approve Request</button>
+                            </form>
 
-<hr>
+                            <form method="POST" action="{{ url_for('update_customer_status', submission_id=c.id, status='rejected') }}">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit" class="danger">Decline Request</button>
+                            </form>
 
-<!-- ===== EMPLOYEE / LABOUR APPLICATIONS ===== -->
-<h2>Labour / Employee Applications</h2>
+                            <form method="POST" action="{{ url_for('update_customer_status', submission_id=c.id, status='pending') }}">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit" class="secondary">Send to Review</button>
+                            </form>
 
-{% if employees %}
-    {% for e in employees %}
-    <div style="border:1px solid #999; padding:15px; margin-bottom:15px; background:#fafafa;">
-
-        <p>
-            <strong>Track ID:</strong> {{ e.track_id }} <br>
-            <strong>Name:</strong> {{ e.name }} <br>
-            <strong>Phone:</strong> {{ e.phone }} <br>
-            <strong>Aadhaar:</strong>
-**** **** {{ e.aadhar[-4:] if e.aadhar else "XXXX" }} <br>
-            <strong>Work Type:</strong> {{ e.work_type }} <br>
-            <strong>Experience:</strong> {{ e.experience }} <br>
-
-            <strong>Status:</strong>
-            {% if e.status == 'approved' %}
-                <span style="color:green;font-weight:bold;">Approved</span>
-            {% elif e.status == 'rejected' %}
-                <span style="color:red;font-weight:bold;">Rejected</span>
-            {% else %}
-                <span style="color:orange;font-weight:bold;">Pending</span>
-            {% endif %}
-            <br>
-
-            <strong>Salary Model:</strong> {{ e.salary_model or "Not decided" }} <br>
-            <strong>Admin Note:</strong> {{ e.admin_note or "—" }} <br>
-            <strong>Applied On:</strong> {{ e.time }}
-        </p>
-
-        <p>
-            <a href="tel:{{ e.phone }}">📞 Call</a> |
-            <a href="https://wa.me/91{{ e.phone }}" target="_blank">💬 WhatsApp</a>
-        </p>
-
-        {% if e.aadhar_file %}
-            <a href="{{ url_for('static', filename='employee_docs/' + e.aadhar_file) }}"
-               target="_blank">📄 View Aadhaar</a>
+                            <form method="POST"
+                                  action="{{ url_for('delete_customer_submission', submission_id=c.id) }}"
+                                  onsubmit="return confirm('Permanently delete this submission?');">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit" class="danger">Delete Submission</button>
+                            </form>
+                        </div>
+                    </article>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="admin-empty">No client submissions yet.</p>
         {% endif %}
+    </section>
 
-        <br><br>
+    <section class="admin-panel" id="employee-applications">
+        <h3>Talent Applications</h3>
 
-        <form method="POST"
-              action="{{ url_for('update_employee_status', index=loop.index0, status='approved') }}"
-              style="display:inline;">
-            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-            <button>Approve</button>
-        </form>
+        {% if employees %}
+            <div class="admin-list-grid">
+                {% for e in employees %}
+                    <article class="admin-entry-card">
+                        <div class="admin-entry-head">
+                            <strong>{{ e.track_id }}</strong>
+                            <span class="status-pill status-{{ e.status }}">
+                                {% if e.status == 'pending' %}In Review{% elif e.status == 'rejected' %}Declined{% else %}Approved{% endif %}
+                            </span>
+                        </div>
 
-        <form method="POST"
-              action="{{ url_for('update_employee_status', index=loop.index0, status='rejected') }}"
-              style="display:inline;">
-            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-            <button style="background:red;color:white;">Reject</button>
-        </form>
+                        <p><strong>Name:</strong> {{ e.name }}</p>
+                        <p><strong>Phone:</strong> {{ e.phone }}</p>
+                        <p><strong>Aadhaar:</strong> **** **** {{ e.aadhar[-4:] if e.aadhar else 'XXXX' }}</p>
+                        <p><strong>Work Type:</strong> {{ e.work_type }}</p>
+                        <p><strong>Experience:</strong> {{ e.experience }}</p>
+                        <p><strong>Applied On:</strong> {{ e.time }}</p>
 
-        <br><br>
+                        <div class="admin-link-row">
+                            <a href="tel:{{ e.phone }}">Call</a>
+                            <a href="https://wa.me/91{{ e.phone }}" target="_blank">WhatsApp</a>
+                            {% if e.aadhar_file %}
+                                <a href="{{ url_for('static', filename='employee_docs/' + e.aadhar_file) }}" target="_blank">View Aadhaar</a>
+                            {% endif %}
+                            {% if e.resume_file %}
+                                <a href="{{ url_for('static', filename='employee_docs/' + e.resume_file) }}" target="_blank">View Resume</a>
+                            {% endif %}
+                        </div>
 
-        <form method="POST"
-              action="{{ url_for('update_employee_note', index=loop.index0) }}">
-            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-            <input name="salary_model"
-                   placeholder="Salary / Per-piece model"
-                   value="{{ e.salary_model }}"><br><br>
+                        <div class="admin-action-row">
+                            <form method="POST" action="{{ url_for('update_employee_status', employee_id=e.id, status='approved') }}">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit">Approve Application</button>
+                            </form>
 
-            <textarea name="admin_note"
-                      placeholder="Admin notes">{{ e.admin_note }}</textarea><br><br>
+                            <form method="POST" action="{{ url_for('update_employee_status', employee_id=e.id, status='rejected') }}">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit" class="danger">Decline Application</button>
+                            </form>
 
-            <button type="submit">Save Notes</button>
-        </form>
+                            <form method="POST" action="{{ url_for('update_employee_status', employee_id=e.id, status='pending') }}">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit" class="secondary">Send to Review</button>
+                            </form>
+                        </div>
 
-    </div>
-    {% endfor %}
-{% else %}
-    <p>No labour applications yet.</p>
-{% endif %}
+                        <form method="POST" action="{{ url_for('update_employee_note', employee_id=e.id) }}" class="admin-note-form">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <input name="salary_model" placeholder="Salary / Per-piece model" value="{{ e.salary_model }}">
+                            <textarea name="admin_note" placeholder="Admin notes">{{ e.admin_note }}</textarea>
+                            <button type="submit">Save Notes</button>
+                        </form>
+                    </article>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="admin-empty">No talent applications yet.</p>
+        {% endif %}
+    </section>
 
+    <section class="admin-panel" id="support-tickets">
+        <h3>Active Support Conversations</h3>
 
+        {% if pending_tickets %}
+            <div class="admin-ticket-list">
+                {% for t in pending_tickets %}
+                    <article class="admin-ticket-card">
+                        <p><strong>Ticket:</strong> {{ t.id }}</p>
+                        <p><strong>Category:</strong> {{ t.category|capitalize }}</p>
+                        <p><strong>Last Update:</strong> {{ t.updated_at }}</p>
+                        <div class="admin-chat-thread">
+                            {% for m in t.messages %}
+                                <div class="admin-chat-msg {{ 'admin' if m.sender == 'admin' else 'user' }}">
+                                    <strong>{{ 'Admin' if m.sender == 'admin' else 'Customer' }}:</strong>
+                                    {{ m.message }}
+                                    <span class="admin-chat-time">{{ m.created_at }}</span>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <form method="POST" action="{{ url_for('admin_chat_reply') }}" class="admin-ticket-form">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <input type="hidden" name="id" value="{{ t.id }}">
+                            <textarea name="reply" placeholder="Write professional reply for customer..." required></textarea>
+                            <button type="submit">Send Support Reply</button>
+                        </form>
+                        <form method="POST" action="{{ url_for('admin_chat_close', ticket_id=t.id) }}"
+                              onsubmit="return confirm('Close this ticket? Customer will not be able to send new messages on this ticket.');">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" class="danger">Close Ticket</button>
+                        </form>
+                    </article>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="admin-empty">No active support conversations right now.</p>
+        {% endif %}
+    </section>
+</div>
 
-<br>
-<a href="{{ url_for('logout') }}">Logout</a>
-
-</body>
-</html>
+{% endblock %}
