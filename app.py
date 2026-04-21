@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash
+from flask import Flask, render_template, request, redirect, url_for, session, flash, Response
 
 from dotenv import load_dotenv
 import requests
@@ -342,25 +342,101 @@ def is_valid_aadhaar(aadhaar_raw):
 
 # ---------------- PUBLIC PAGES ----------------
 
+@app.route("/robots.txt")
+def robots_txt():
+    base = (request.url_root or "").rstrip("/")
+    lines = [
+        "User-agent: *",
+        "Allow: /",
+        "Disallow: /admin",
+        "Disallow: /admin/",
+        "Disallow: /logout",
+        f"Sitemap: {base}/sitemap.xml" if base else "Sitemap: /sitemap.xml",
+    ]
+    return Response("\n".join(lines) + "\n", mimetype="text/plain")
+
+
+@app.route("/sitemap.xml")
+def sitemap_xml():
+    base = (request.url_root or "").rstrip("/")
+    today = datetime.utcnow().date().isoformat()
+
+    paths = [
+        "/",
+        "/about",
+        "/designs",
+        "/customer_contact",
+        "/track",
+        "/careers",
+    ]
+
+    def make_url(path):
+        if base:
+            return f"{base}{path}"
+        return path
+
+    urlset = []
+    for path in paths:
+        loc = make_url(path)
+        urlset.append(
+            "\n".join(
+                [
+                    "  <url>",
+                    f"    <loc>{loc}</loc>",
+                    f"    <lastmod>{today}</lastmod>",
+                    "  </url>",
+                ]
+            )
+        )
+
+    xml = "\n".join(
+        [
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+            *urlset,
+            "</urlset>",
+            "",
+        ]
+    )
+    return Response(xml, mimetype="application/xml")
+
+
 @app.route("/")
 def home():
     home_images = os.listdir(HOME_FOLDER)
     return render_template(
         "home.html",
         home_images=home_images,
-        datetime=datetime
+        datetime=datetime,
+        page_title="I.F Fashion | Embroidery Digitizing & Custom Fashion Designs",
+        meta_description="I.F Fashion delivers premium embroidery digitizing, custom design development, and production-ready samples for modern fashion brands. Submit your brief and track status online.",
+        hero_title="I.F Fashion",
+        hero_subtitle="Crafted Embroidery Excellence for Modern Fashion Brands",
     )
 
 
 @app.route("/about")
 def about():
-    return render_template("about.html")
+    return render_template(
+        "about.html",
+        page_title="About I.F Fashion | Craft, Quality, and Process",
+        meta_description="Learn about I.F Fashion, our embroidery craft process, quality checks, and the team behind production-ready designs for fashion labels.",
+        hero_title="About I.F Fashion",
+        hero_subtitle="The craft standards behind every stitch.",
+    )
 
 
 @app.route("/designs")
 def designs():
     images = os.listdir(DESIGN_FOLDER)
-    return render_template("designs.html", images=images)
+    return render_template(
+        "designs.html",
+        images=images,
+        page_title="Embroidery Gallery | I.F Fashion Signature Showcase",
+        meta_description="Explore our signature embroidery showcase. View samples, patterns, and production-quality finishing crafted for fashion collections.",
+        hero_title="Embroidery Gallery",
+        hero_subtitle="Signature work and client-ready samples.",
+    )
 
 
 # ---------------- CUSTOMER CONTACT ----------------
@@ -419,7 +495,14 @@ def customer():
 
     last_track_id = session.get("last_track_id")
     session.pop("last_track_id", None)
-    return render_template("customer_contact.html", last_track_id=last_track_id)
+    return render_template(
+        "customer_contact.html",
+        last_track_id=last_track_id,
+        page_title="Customer Design Request | Submit Your Brief | I.F Fashion",
+        meta_description="Send your reference image and requirements to start a custom embroidery design request. Fast review, clear updates, and tracking.",
+        hero_title="Start A Design Request",
+        hero_subtitle="Upload your reference and we will review it fast.",
+    )
 
 
 # ---------------- TRACK REQUEST ----------------
@@ -451,7 +534,16 @@ def track_request():
         if not result:
             error = "Invalid Track ID. Please check and try again."
 
-    return render_template("track.html", result=result, error=error, track_type=track_type)
+    return render_template(
+        "track.html",
+        result=result,
+        error=error,
+        track_type=track_type,
+        page_title="Track Status | IF / EMP Tracker | I.F Fashion",
+        meta_description="Track your customer design request or employee application using your IF- or EMP- tracking code. See latest status updates instantly.",
+        hero_title="Track Your Status",
+        hero_subtitle="Enter your IF- or EMP- tracking code to view updates.",
+    )
 
 
 # ---------------- CAREERS / EMPLOYEE APPLY ----------------
@@ -536,7 +628,14 @@ def careers():
 
     track = session.get("employee_track_id")
     session.pop("employee_track_id", None)
-    return render_template("careers.html", employee_track_id=track)
+    return render_template(
+        "careers.html",
+        employee_track_id=track,
+        page_title="Employment | Apply to I.F Fashion",
+        meta_description="Apply to join I.F Fashion. Submit your details, Aadhaar document, and optional resume. Track your employee application status online.",
+        hero_title="Employment",
+        hero_subtitle="Apply to join our production team.",
+    )
 
 
 # ---------------- ADMIN SIGNUP ----------------

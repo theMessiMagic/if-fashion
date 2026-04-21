@@ -15,6 +15,11 @@ function scrollToBottom() {
     messages.scrollTop = messages.scrollHeight;
 }
 
+function clearActionRows() {
+    if (!messages) return;
+    messages.querySelectorAll(".chat-menu-actions").forEach((el) => el.remove());
+}
+
 function createRow(sender, text, cls = "") {
     const row = document.createElement("div");
     row.className = `chat-row ${cls}`.trim();
@@ -61,7 +66,7 @@ async function typeBot(text, delay = 450) {
 
 function addActionButtons(actions) {
     const wrap = document.createElement("div");
-    wrap.className = "chat-actions";
+    wrap.className = "chat-actions chat-menu-actions";
 
     actions.forEach((action) => {
         const btn = document.createElement("button");
@@ -78,7 +83,7 @@ function addActionButtons(actions) {
 
 function addLinkButtons(links) {
     const wrap = document.createElement("div");
-    wrap.className = "chat-actions";
+    wrap.className = "chat-actions chat-link-actions";
 
     links.forEach((item) => {
         const link = document.createElement("a");
@@ -92,7 +97,17 @@ function addLinkButtons(links) {
     scrollToBottom();
 }
 
+function showMiniMenu() {
+    clearActionRows();
+    addActionButtons([
+        { key: "menu", label: "Menu" },
+        { key: "track", label: "Track" },
+        { key: "support", label: "Support" },
+    ]);
+}
+
 function showMainMenu() {
+    clearActionRows();
     addActionButtons([
         { key: "track", label: "Track My Request" },
         { key: "new_order", label: "Start A New Design Brief" },
@@ -104,6 +119,7 @@ function showMainMenu() {
 }
 
 function showFaqMenu() {
+    clearActionRows();
     addActionButtons([
         { key: "faq_timeline", label: "Delivery Timeline" },
         { key: "faq_pricing", label: "Pricing Policy" },
@@ -137,7 +153,8 @@ async function createSupportTicket(issueText) {
         activeTicketId = data.ticket_id;
         lastSeenMessageId = 0;
         startTicketPolling(data.ticket_id);
-        showMainMenu();
+        await typeBot("Tip: type 'menu' anytime if you want quick options.", 250);
+        showMiniMenu();
     } catch (_err) {
         await typeBot("There seems to be a network issue while opening your ticket. Please try again.", 300);
     }
@@ -205,7 +222,7 @@ async function handleAction(key, label = "") {
             await typeBot("You can view real-time progress using your request ID.");
             addLinkButtons([{ label: "Open Tracking Page", href: "/track" }]);
             await typeBot("Pro tip: keep your IF- or EMP- code handy for faster lookup.");
-            showMainMenu();
+            showMiniMenu();
             break;
 
         case "new_order":
@@ -213,7 +230,7 @@ async function handleAction(key, label = "") {
             await typeBot("Great choice. Start your custom design brief from our client request form.");
             addLinkButtons([{ label: "Open Customer Contact", href: "/customer_contact" }]);
             await typeBot("Upload a clear reference and concise notes for the fastest review cycle.");
-            showMainMenu();
+            showMiniMenu();
             break;
 
         case "careers":
@@ -221,14 +238,14 @@ async function handleAction(key, label = "") {
             await typeBot("Please apply through our careers form using valid phone and Aadhaar details.");
             addLinkButtons([{ label: "Open Careers Page", href: "/careers" }]);
             await typeBot("After submission, track your hiring progress using the EMP request ID.");
-            showMainMenu();
+            showMiniMenu();
             break;
 
         case "process":
             activeCategory = "process";
             await typeBot("Workflow: Design brief submitted -> Expert review -> Approval or decline -> Production updates.");
             await typeBot("Need personalized help on any step? Choose human support.");
-            showMainMenu();
+            showMiniMenu();
             break;
 
         case "faq":
@@ -273,13 +290,13 @@ async function handleAction(key, label = "") {
             break;
 
         case "menu":
-            await typeBot("Main options are now ready.");
+            await typeBot("Here are the main options.");
             showMainMenu();
             break;
 
         default:
-            await typeBot("I could not map that request clearly. Please pick a guided option below.");
-            showMainMenu();
+            await typeBot("I could not map that request clearly. Type 'menu' for options, or tell me what you need in one line.");
+            showMiniMenu();
     }
 }
 
@@ -289,7 +306,7 @@ function clearConversation() {
     activeCategory = "";
     activeTicketId = "";
     lastSeenMessageId = 0;
-    typeBot("Conversation reset successfully. How would you like to proceed?", 250).then(showMainMenu);
+    typeBot("Conversation reset. Tell me what you need, or type 'menu' for options.", 250).then(showMiniMenu);
 }
 
 async function handleTextInput(text) {
@@ -338,7 +355,8 @@ async function handleTextInput(text) {
     }
 
     await typeBot("For the quickest support experience, choose one of the guided options.");
-    showMainMenu();
+    await typeBot("Type 'menu' if you want the full list of options.", 250);
+    showMiniMenu();
 }
 
 if (toggle) {
@@ -350,7 +368,8 @@ if (toggle) {
             initialized = true;
             typeBot("Welcome to I.F Fashion Concierge Desk.", 250)
                 .then(() => typeBot("I can assist with design requests, tracking, careers, FAQs, and live support tickets.", 350))
-                .then(showMainMenu);
+                .then(() => typeBot("Ask your question, or type 'menu' for quick options.", 250))
+                .then(showMiniMenu);
         }
     };
 }

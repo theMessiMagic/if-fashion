@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>I.F Fashion</title>
+    <title>{{ page_title|default("I.F Fashion | Embroidery Digitizing & Custom Fashion Designs") }}</title>
+    <meta name="description" content="{{ meta_description|default('I.F Fashion delivers premium embroidery digitizing, custom design development, and production-ready samples for modern fashion brands.') }}">
+    <link rel="canonical" href="{{ canonical_url|default(request.base_url) }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
@@ -18,8 +20,8 @@
 </nav>
 <section class="hero site-hero">
     <div class="hero-content">
-        <h1>I.F Fashion</h1>
-        <p>Crafted Embroidery Excellence for Modern Fashion Brands</p>
+        <h1>{{ hero_title|default("I.F Fashion") }}</h1>
+        <p>{{ hero_subtitle|default("Crafted Embroidery Excellence for Modern Fashion Brands") }}</p>
     </div>
 </section>
 
@@ -33,6 +35,27 @@
 <main class="page-shell">
 {% block content %}{% endblock %}
 </main>
+
+<footer class="site-footer">
+    <div class="footer-inner">
+        <div class="footer-brand">
+            <div class="footer-title">I.F Fashion</div>
+            <div class="footer-tagline">Embroidery digitizing and production-ready design support.</div>
+        </div>
+        <div class="footer-links" aria-label="Quick links">
+            <a href="/">Home</a>
+            <a href="/about">About</a>
+            <a href="/designs">Gallery</a>
+            <a href="/customer_contact">Customer</a>
+            <a href="/track">Track</a>
+            <a href="/careers">Employment</a>
+        </div>
+        <div class="footer-meta">
+            <a href="/sitemap.xml">Sitemap</a>
+            <a href="/robots.txt">Robots</a>
+        </div>
+    </div>
+</footer>
 
 <!-- Lightbox -->
 <div id="lightbox" onclick="closeLightbox()">
@@ -96,4 +119,3 @@ function closeLightbox() {
 
 </body>
 </html>
-
